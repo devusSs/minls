@@ -67,7 +67,7 @@ func handleCommandLine() int {
 	case "list":
 		fmt.Println("list command, not implemented")
 		return 0
-	case "uplaod":
+	case "upload":
 		fmt.Println("upload command, not implemented")
 		return 0
 	case "download":
