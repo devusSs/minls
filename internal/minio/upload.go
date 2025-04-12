@@ -11,6 +11,8 @@ import (
 	"github.com/gabriel-vasile/mimetype"
 	"github.com/google/uuid"
 	"github.com/minio/minio-go/v7"
+
+	"github.com/devusSs/minls/internal/log"
 )
 
 func (c *Client) UploadFile(ctx context.Context, filePath string, public bool) (string, error) {
@@ -18,7 +20,7 @@ func (c *Client) UploadFile(ctx context.Context, filePath string, public bool) (
 		return "", errors.New("context cannot be nil")
 	}
 
-	c.logger.Info(
+	log.Info(
 		"minio - uploading file",
 		slog.String("file_path", filePath),
 		slog.Bool("public", public),
@@ -34,14 +36,14 @@ func (c *Client) UploadFile(ctx context.Context, filePath string, public bool) (
 		return "", fmt.Errorf("could not find content type: %w", err)
 	}
 
-	c.logger.Info("minio - uploading file", slog.String("content-type", ct))
+	log.Info("minio - uploading file", slog.String("content-type", ct))
 
 	fileName, err := randomizeFileName(filePath)
 	if err != nil {
 		return "", fmt.Errorf("could not randomize file name: %w", err)
 	}
 
-	c.logger.Info("minio - uploading file", slog.String("radomized_file_name", fileName))
+	log.Info("minio - uploading file", slog.String("radomized_file_name", fileName))
 
 	// TODO: rework this
 	bucketName := bucketNamePrivate
@@ -49,7 +51,7 @@ func (c *Client) UploadFile(ctx context.Context, filePath string, public bool) (
 		bucketName = bucketNamePublic
 	}
 
-	c.logger.Debug("minio - uploading file", slog.String("bucket_name", bucketName))
+	log.Debug("minio - uploading file", slog.String("bucket_name", bucketName))
 
 	info, err := c.client.FPutObject(ctx, bucketName, fileName, filePath, minio.PutObjectOptions{
 		ContentType: ct,
@@ -58,11 +60,11 @@ func (c *Client) UploadFile(ctx context.Context, filePath string, public bool) (
 		return "", fmt.Errorf("could not fput object: %w", err)
 	}
 
-	c.logger.Debug("minio - uploading file", slog.Any("info", info))
+	log.Debug("minio - uploading file", slog.Any("info", info))
 
 	if public {
 		link := fmt.Sprintf("%s/%s/%s", c.client.EndpointURL().String(), bucketName, info.Key)
-		c.logger.Info("minio - uploading file", slog.String("link", link))
+		log.Info("minio - uploading file", slog.String("link", link))
 		return link, nil
 	}
 
@@ -71,7 +73,7 @@ func (c *Client) UploadFile(ctx context.Context, filePath string, public bool) (
 		return "", fmt.Errorf("could not get presigned url: %w", err)
 	}
 
-	c.logger.Info("minio - uploading file", slog.String("link", link.String()))
+	log.Info("minio - uploading file", slog.String("link", link.String()))
 
 	return link.String(), nil
 }
@@ -86,14 +88,14 @@ func (c *Client) createBucket(ctx context.Context, public bool) error {
 		bucket = bucketNamePublic
 	}
 
-	c.logger.Debug("minio - create bucket", slog.String("bucket_name", bucket))
+	log.Debug("minio - create bucket", slog.String("bucket_name", bucket))
 
 	exists, err := c.client.BucketExists(ctx, bucket)
 	if err != nil {
 		return fmt.Errorf("could not check if bucket exists: %w", err)
 	}
 
-	c.logger.Debug("minio - create bucket", slog.Bool("bucket_exists", exists))
+	log.Debug("minio - create bucket", slog.Bool("bucket_exists", exists))
 
 	if exists {
 		return nil
@@ -107,7 +109,7 @@ func (c *Client) createBucket(ctx context.Context, public bool) error {
 		return fmt.Errorf("could not create bucket: %w", err)
 	}
 
-	c.logger.Debug("minio - create bucket", slog.String("msg", "created bucket"))
+	log.Debug("minio - create bucket", slog.String("msg", "created bucket"))
 
 	if !public {
 		return nil
@@ -118,7 +120,7 @@ func (c *Client) createBucket(ctx context.Context, public bool) error {
 		return fmt.Errorf("could not set public bucket policy: %w", err)
 	}
 
-	c.logger.Debug("minio - create bucket", slog.String("msg", "set public bucket policy"))
+	log.Debug("minio - create bucket", slog.String("msg", "set public bucket policy"))
 
 	return nil
 }
