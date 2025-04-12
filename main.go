@@ -98,18 +98,20 @@ func printNoCommandHelp(command string) {
 func printHelp() {
 	printHeader()
 	fmt.Println("Usage:")
-	fmt.Println("	minls version			Prints version / build information")
-	fmt.Println("	minls help			Prints this help message")
+	fmt.Println("	minls version				Prints version / build information")
+	fmt.Println("	minls help				Prints this help message")
 	fmt.Println(
-		"	minls list			Prints all uploaded files if possible and available",
+		"	minls list				Prints all uploaded files if possible and available",
 	)
-	fmt.Println("	minls upload <filepath>		Uploads the specified file")
 	fmt.Println(
-		"	minls download <id> <filepath>	Downloads the specified file to the specified filepath",
+		"	minls upload <filepath> <policy>	Uploads the specified file (policies: private / public)",
 	)
-	fmt.Println("	minls delete <id>		Deletes the specified file")
 	fmt.Println(
-		"	minls clear <option>		Clears program data (options: all / data / logs / downloads)",
+		"	minls download <id> <filepath>		Downloads the specified file to the specified filepath",
+	)
+	fmt.Println("	minls delete <id>			Deletes the specified file")
+	fmt.Println(
+		"	minls clear <option>			Clears program data (options: all / data / logs / downloads)",
 	)
 }
 
