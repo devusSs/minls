@@ -11,5 +11,5 @@ go.work.sum
 data/
 logs/
 testdata/
-minls# Added by goreleaser init:
+minls
 dist/
