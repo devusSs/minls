@@ -19,6 +19,8 @@ func NewClient(
 	endpoint string,
 ) (*Client, error) {
 	secure := strings.Contains(endpoint, "https://")
+	endpoint = strings.Replace(endpoint, "https://", "", 1)
+	endpoint = strings.Replace(endpoint, "http://", "", 1)
 
 	c, err := minio.New(endpoint, &minio.Options{
 		Creds:  credentials.NewStaticV4(accessKey, accessSecret, ""),
