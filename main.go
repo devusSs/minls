@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 	"runtime"
+
+	"github.com/devusSs/minls/internal/cli"
 )
 
 var (
@@ -68,7 +70,11 @@ func handleCommandLine() int {
 		fmt.Println("list command, not implemented")
 		return 0
 	case "upload":
-		fmt.Println("upload command, not implemented")
+		err := cli.Upload()
+		if err != nil {
+			fmt.Println("UPLOAD FAILED:", err)
+			return 1
+		}
 		return 0
 	case "download":
 		fmt.Println("download command, not implemented")
