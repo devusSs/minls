@@ -4,12 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log/slog"
 	"net/http"
 	"net/url"
 	"strings"
-
-	"github.com/devusSs/minls/internal/log"
 )
 
 type Client struct {
@@ -21,27 +18,12 @@ type Client struct {
 func NewClient(endpoint string, signature string) *Client {
 	if !strings.Contains(endpoint, "https://") && !strings.Contains(endpoint, "http://") {
 		endpoint = "http://" + endpoint
-		log.Warn(
-			"yourls - NewClient",
-			slog.String("warn", "missing_schema"),
-			slog.String("endpoint_new", endpoint),
-		)
 	}
 
 	if !strings.Contains(endpoint, "https://") {
-		log.Warn(
-			"yourls - NewClient",
-			slog.String("warn", "endpoint not secure"),
-			slog.String("endpoint", endpoint),
-		)
 	}
 
 	if !strings.Contains(endpoint, "/yourls-api.php") {
-		log.Warn(
-			"yourls - NewClient",
-			slog.String("warn", "potentially missing api path"),
-			slog.String("endpoint", endpoint),
-		)
 	}
 
 	return &Client{
