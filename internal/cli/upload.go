@@ -28,7 +28,7 @@ func Upload() error {
 		return fmt.Errorf("could not load env: %w", err)
 	}
 
-	if len(os.Args) != 4 {
+	if len(os.Args) != neededArgs {
 		return fmt.Errorf("missing upload filepath or policy, len(os.Args) = %d", len(os.Args))
 	}
 
@@ -72,6 +72,8 @@ func Upload() error {
 
 	return nil
 }
+
+const neededArgs = 4
 
 func getFilePath() (string, error) {
 	fp := os.Args[2]

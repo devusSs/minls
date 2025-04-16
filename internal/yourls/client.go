@@ -15,15 +15,18 @@ type Client struct {
 	client    *http.Client
 }
 
+// TODO: readd logging here
 func NewClient(endpoint string, signature string) *Client {
 	if !strings.Contains(endpoint, "https://") && !strings.Contains(endpoint, "http://") {
 		endpoint = "http://" + endpoint
 	}
 
 	if !strings.Contains(endpoint, "https://") {
+		fmt.Println("WARN: YOURLS - NewClient: endpoint not secure")
 	}
 
 	if !strings.Contains(endpoint, "/yourls-api.php") {
+		fmt.Println("WARN: YOURLS - NewClient: potentially missing default endpoint url path")
 	}
 
 	return &Client{
