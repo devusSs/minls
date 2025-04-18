@@ -90,7 +90,7 @@ func createLogsDirIfNotExist() error {
 
 	logsDir = filepath.Join(filepath.Dir(exe), logsDir)
 
-	err = os.Mkdir(logsDir, 0755)
+	err = os.Mkdir(logsDir, 0750)
 	if err != nil {
 		if !os.IsExist(err) {
 			return fmt.Errorf("could not create logs dir: %w", err)
@@ -144,7 +144,10 @@ func slogLevelFromString(s string) slog.Level {
 	}
 }
 
-const logFileMaxAge = 7 * 24 * time.Hour
+const (
+	splitFileNameSubstringCount = 2
+	logFileMaxAge               = 7 * 24 * time.Hour
+)
 
 // TODO: find a way to complete this before program exits on main
 func cleanOldLogs() {
@@ -165,22 +168,14 @@ func cleanOldLogs() {
 			continue
 		}
 
-		split := strings.SplitN(fp, ".", 2)
-		if len(split) != 2 {
-			fmt.Printf(
-				"log - cleanOldLogs: found malformed file: '%s', len(split) = %d\n",
-				fp,
-				len(split),
-			)
-			continue
-		}
-
+		split := strings.SplitN(fp, ".", splitFileNameSubstringCount)
 		if split[1] != "log.json" {
 			fmt.Printf("log - cleanOldLogs: found unexpected file: '%s'\n", fp)
 			continue
 		}
 
-		fi, err := os.Stat(filepath.Join(fp))
+		var fi os.FileInfo
+		fi, err = os.Stat(fp)
 		if err != nil {
 			fmt.Printf(
 				"log - cleanOldLogs: could not get file info for file '%s', error: %v\n",
