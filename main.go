@@ -2,10 +2,12 @@ package main
 
 import (
 	"fmt"
+	"log/slog"
 	"os"
 	"runtime"
 
 	"github.com/devusSs/minls/internal/cli"
+	"github.com/devusSs/minls/internal/log"
 )
 
 var (
@@ -72,7 +74,7 @@ func handleCommandLine() int {
 	case "upload":
 		err := cli.Upload()
 		if err != nil {
-			fmt.Println("UPLOAD FAILED:", err)
+			log.Error("main - upload", slog.String("action", "upload_failed"), slog.Any("err", err))
 			return 1
 		}
 		return 0
