@@ -11,6 +11,7 @@ type Client struct {
 	client *minio.Client
 }
 
+// TODO: readd logging to this & upload
 func NewClient(
 	accessKey string,
 	accessSecret string,
