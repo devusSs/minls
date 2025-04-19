@@ -1,8 +1,10 @@
 package minio
 
 import (
+	"log/slog"
 	"strings"
 
+	"github.com/devusSs/minls/internal/log"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 )
@@ -11,7 +13,6 @@ type Client struct {
 	client *minio.Client
 }
 
-// TODO: readd logging to this & upload
 func NewClient(
 	accessKey string,
 	accessSecret string,
@@ -27,6 +28,10 @@ func NewClient(
 	})
 	if err != nil {
 		return nil, err
+	}
+
+	if !secure {
+		log.Warn("minio - NewClient", slog.String("warn", "endpoint not secure"))
 	}
 
 	return &Client{
