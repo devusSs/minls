@@ -4,9 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"net/url"
 	"strings"
+
+	"github.com/devusSs/minls/internal/log"
 )
 
 type Client struct {
@@ -15,18 +18,24 @@ type Client struct {
 	client    *http.Client
 }
 
-// TODO: readd logging here
 func NewClient(endpoint string, signature string) *Client {
 	if !strings.Contains(endpoint, "https://") && !strings.Contains(endpoint, "http://") {
+		log.Warn(
+			"yourls - NewClient",
+			slog.String("warn", "endpoint does not contain schema, adding 'http://'"),
+		)
 		endpoint = "http://" + endpoint
 	}
 
 	if !strings.Contains(endpoint, "https://") {
-		fmt.Println("WARN: YOURLS - NewClient: endpoint not secure")
+		log.Warn("yourls - NewClient", slog.String("warn", "endpoint is not secure"))
 	}
 
 	if !strings.Contains(endpoint, "/yourls-api.php") {
-		fmt.Println("WARN: YOURLS - NewClient: potentially missing default endpoint url path")
+		log.Warn(
+			"yourls - NewClient",
+			slog.String("warn", "endpoint does not contains typical api path"),
+		)
 	}
 
 	return &Client{
@@ -53,8 +62,15 @@ func (c *Client) do(
 		return nil, fmt.Errorf("could not parse endpoint: %w", err)
 	}
 
+	log.Debug("yourls - *client.do", slog.String("action", "url_parse"), slog.Any("parsed_url", u))
+
 	_, ok := values["signature"]
 	if !ok {
+		log.Warn(
+			"yourls - *client.do",
+			slog.String("action", "check_values"),
+			slog.String("warn", "signature not in values, adding from client"),
+		)
 		values["signature"] = c.signature
 	}
 
@@ -62,6 +78,8 @@ func (c *Client) do(
 	for k, v := range values {
 		vl.Set(k, v)
 	}
+
+	log.Debug("yourls - *client.do", slog.String("action", "set_values"), slog.Any("vl", vl))
 
 	req, err := http.NewRequestWithContext(
 		ctx,
@@ -80,6 +98,8 @@ func (c *Client) do(
 	if err != nil {
 		return nil, fmt.Errorf("could not get response: %w", err)
 	}
+
+	log.Debug("yourls - *client.do", slog.String("action", "got_response"), slog.Any("resp", resp))
 
 	return resp, nil
 }

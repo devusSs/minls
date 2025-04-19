@@ -5,9 +5,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/google/uuid"
+
+	"github.com/devusSs/minls/internal/log"
 )
 
 func (c *Client) Shorten(ctx context.Context, input string) (string, error) {
@@ -20,6 +23,12 @@ func (c *Client) Shorten(ctx context.Context, input string) (string, error) {
 		return "", fmt.Errorf("could not create uuid for keyword: %w", err)
 	}
 
+	log.Debug(
+		"yourls - *client.Shorten",
+		slog.String("action", "uuid_newuuid"),
+		slog.Any("uid", uid),
+	)
+
 	v := make(map[string]string)
 	v["signature"] = c.signature
 	v["action"] = "shorturl"
@@ -28,11 +37,15 @@ func (c *Client) Shorten(ctx context.Context, input string) (string, error) {
 	v["title"] = defaultUploadTitle
 	v["keyword"] = uid.String()
 
+	log.Debug("yourls - *client.Shorten", slog.String("action", "set_values"), slog.Any("v", v))
+
 	resp, err := c.do(ctx, v)
 	if err != nil {
 		return "", fmt.Errorf("client.do(): %w", err)
 	}
 	defer resp.Body.Close()
+
+	log.Debug("yourls - *client.Shorten", slog.String("action", "got_resp"), slog.Any("resp", resp))
 
 	if resp.StatusCode != http.StatusOK {
 		return "", fmt.Errorf("unwanted status code: %d (%s)", resp.StatusCode, resp.Status)
@@ -43,6 +56,12 @@ func (c *Client) Shorten(ctx context.Context, input string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("could not decode response: %w", err)
 	}
+
+	log.Debug(
+		"yourls - *client.Shorten",
+		slog.String("action", "decoded_resp"),
+		slog.Any("res", res),
+	)
 
 	return res.Shorturl, nil
 }
