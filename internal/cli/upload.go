@@ -12,6 +12,7 @@ import (
 	"github.com/devusSs/minls/internal/env"
 	"github.com/devusSs/minls/internal/log"
 	"github.com/devusSs/minls/internal/minio"
+	"github.com/devusSs/minls/internal/storage"
 	"github.com/devusSs/minls/internal/yourls"
 )
 
@@ -89,14 +90,12 @@ func Upload() error {
 
 	log.Info("cli - Upload", slog.String("action", "shortened_url"), slog.String("link", link))
 
-	// TODO: setup & write to storage
-
-	err = clip.Init()
+	err = storage.WriteEntry(&storage.DataEntry{MinioLink: minioLink, YOURLSLink: link})
 	if err != nil {
-		return fmt.Errorf("clipboard could not be initialized: %w", err)
+		return fmt.Errorf("could not write to storage: %w", err)
 	}
 
-	log.Debug("cli - Upload", slog.String("action", "clip_init"))
+	log.Info("cli - Upload", slog.String("action", "storage_write_entry"))
 
 	err = clip.Write(link)
 	if err != nil {
