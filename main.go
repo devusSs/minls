@@ -121,9 +121,11 @@ func printHelp() {
 		"	minls upload <filepath> <policy>	Uploads the specified file (policies: private / public)",
 	)
 	fmt.Println(
-		"	minls download <id> <filepath>		Downloads the specified file to the specified filepath",
+		"	minls download <id> <custom_name>	Downloads the specified file to the specified name (in the downloads directory)",
 	)
-	fmt.Println("	minls delete <id>			Deletes the specified file")
+	fmt.Println(
+		"	minls delete <id>			Deletes the specified file and shortened link on the remote storage",
+	)
 	fmt.Println(
 		"	minls clear <option>			Clears program data (options: all / data / logs / downloads)",
 	)
