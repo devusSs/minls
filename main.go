@@ -2,12 +2,10 @@ package main
 
 import (
 	"fmt"
-	"log/slog"
 	"os"
 	"runtime"
 
 	"github.com/devusSs/minls/internal/cli"
-	"github.com/devusSs/minls/internal/log"
 )
 
 var (
@@ -62,6 +60,10 @@ func printVersion() {
 	fmt.Printf("Build Go arch:\t\t%s\n", runtime.GOARCH)
 }
 
+// DO NOT LOG IN THIS FUNCTION AS WE CANNOT ASSURE
+// IT WORKS / WAS SETUP PROPERLY
+//
+// TODO: fix this?
 func handleCommandLine() int {
 	// we can be sure len(os.Args) > 1
 	// because we check that before
@@ -74,7 +76,7 @@ func handleCommandLine() int {
 	case "upload":
 		err := cli.Upload()
 		if err != nil {
-			log.Error("main - upload", slog.String("action", "upload_failed"), slog.Any("err", err))
+			fmt.Println("MAIN: UPLOAD FAILED:", err)
 			return 1
 		}
 		return 0
@@ -85,7 +87,11 @@ func handleCommandLine() int {
 		fmt.Println("delete command, not implemented")
 		return 0
 	case "clear":
-		fmt.Println("clear command, not implemented")
+		err := cli.Clear()
+		if err != nil {
+			fmt.Println("MAIN: CLEAR FAILED:", err)
+			return 1
+		}
 		return 0
 	default:
 		printNoCommandHelp(command)
