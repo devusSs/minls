@@ -71,7 +71,11 @@ func handleCommandLine() int {
 	command := os.Args[1]
 	switch command {
 	case "list":
-		fmt.Println("list command, not implemented")
+		err := cli.List()
+		if err != nil {
+			fmt.Println("MAIN: LIST FAILED:", err)
+			return 1
+		}
 		return 0
 	case "upload":
 		err := cli.Upload()
