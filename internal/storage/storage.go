@@ -61,6 +61,10 @@ func RemoveStorageDir() error {
 	return nil
 }
 
+func ReadData() (*Data, error) {
+	return readCurrentDataFromFile()
+}
+
 type Data struct {
 	Entries []*DataEntry `json:"entries"`
 }
