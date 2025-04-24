@@ -52,6 +52,15 @@ func WriteEntry(entry *DataEntry) error {
 	return nil
 }
 
+func RemoveStorageDir() error {
+	err := os.RemoveAll(storageDir)
+	if err != nil {
+		return fmt.Errorf("could not os.RemoveAll: %w", err)
+	}
+
+	return nil
+}
+
 type Data struct {
 	Entries []*DataEntry `json:"entries"`
 }
