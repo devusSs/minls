@@ -64,8 +64,10 @@ func (c clearOption) String() string {
 	}
 }
 
+const clearMinArgs = 3
+
 func getClearOption() clearOption {
-	if len(os.Args) < 3 {
+	if len(os.Args) < clearMinArgs {
 		return clearOptionInvalid
 	}
 

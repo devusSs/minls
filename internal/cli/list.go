@@ -36,12 +36,15 @@ func List() error {
 	fmt.Fprintln(w, "ID\tTimestamp\tMinio ID\tYOURLS ID")
 
 	for _, entry := range data.Entries {
-		minioURL, err := url.Parse(entry.MinioLink)
+		var minioURL *url.URL
+		var yourlsURL *url.URL
+
+		minioURL, err = url.Parse(entry.MinioLink)
 		if err != nil {
 			return fmt.Errorf("malformed minio url: %w", err)
 		}
 
-		yourlsURL, err := url.Parse(entry.YOURLSLink)
+		yourlsURL, err = url.Parse(entry.YOURLSLink)
 		if err != nil {
 			return fmt.Errorf("mailformed yourls url: %w", err)
 		}
