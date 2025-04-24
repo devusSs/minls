@@ -78,6 +78,15 @@ func Error(msg string, args ...any) {
 	consoleLogger.Error(msg, args...)
 }
 
+func RemoveLogsDir() error {
+	err := os.RemoveAll(logsDir)
+	if err != nil {
+		return fmt.Errorf("could not os.RemoveAll: %w", err)
+	}
+
+	return nil
+}
+
 var setup bool
 
 var logsDir = "logs"
