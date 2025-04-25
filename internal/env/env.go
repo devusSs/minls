@@ -2,9 +2,13 @@ package env
 
 import (
 	"fmt"
+	"log/slog"
 	"os"
+	"path/filepath"
 
 	"github.com/joho/godotenv"
+
+	"github.com/devusSs/minls/internal/log"
 )
 
 type Env struct {
@@ -16,10 +20,26 @@ type Env struct {
 }
 
 func Load() (*Env, error) {
-	_ = godotenv.Load()
+	exe, err := os.Executable()
+	if err != nil {
+		return nil, fmt.Errorf("could not find executable: %w", err)
+	}
+
+	log.Debug("env - Load", slog.String("action", "find_executable"), slog.String("exe_path", exe))
+
+	envFilePath := filepath.Join(filepath.Dir(exe), ".env")
+	log.Debug(
+		"env - Load",
+		slog.String("action", "godotenv_load"),
+		slog.String("env_file_path", envFilePath),
+	)
+
+	// we can ignore the load error since we dont mind
+	// whether an .env file is actually present or not
+	err = godotenv.Load(envFilePath)
+	log.Debug("env - Load", slog.String("action", "godotenv_load"), slog.Any("err", err))
 
 	env := &Env{}
-	var err error
 
 	env.MinioEndpoint, err = loadKey("MINIO_ENDPOINT")
 	if err != nil {
@@ -54,6 +74,8 @@ func loadKey(key string) (string, error) {
 	if v == "" {
 		return "", fmt.Errorf("key %s could not be found", key)
 	}
+
+	log.Debug("env - loadKey", slog.String("key", key), slog.String("v", v))
 
 	return v, nil
 }
