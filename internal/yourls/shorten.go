@@ -45,7 +45,12 @@ func (c *Client) Shorten(ctx context.Context, input string) (string, error) {
 	}
 	defer resp.Body.Close()
 
-	log.Debug("yourls - *client.Shorten", slog.String("action", "got_resp"), slog.Any("resp", resp))
+	log.Debug(
+		"yourls - *client.Shorten",
+		slog.String("action", "got_resp"),
+		slog.Int("resp_status_code", resp.StatusCode),
+		slog.String("resp_status", resp.Status),
+	)
 
 	if resp.StatusCode != http.StatusOK {
 		return "", fmt.Errorf("unwanted status code: %d (%s)", resp.StatusCode, resp.Status)

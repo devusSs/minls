@@ -34,7 +34,7 @@ func NewClient(endpoint string, signature string) *Client {
 	if !strings.Contains(endpoint, "/yourls-api.php") {
 		log.Warn(
 			"yourls - NewClient",
-			slog.String("warn", "endpoint does not contains typical api path"),
+			slog.String("warn", "endpoint does not contain typical api path (/yourls-api.php)"),
 		)
 	}
 
@@ -99,7 +99,12 @@ func (c *Client) do(
 		return nil, fmt.Errorf("could not get response: %w", err)
 	}
 
-	log.Debug("yourls - *client.do", slog.String("action", "got_response"), slog.Any("resp", resp))
+	log.Debug(
+		"yourls - *client.do",
+		slog.String("action", "got_response"),
+		slog.Int("resp_status_code", resp.StatusCode),
+		slog.String("resp_status", resp.Status),
+	)
 
 	return resp, nil
 }

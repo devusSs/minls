@@ -4,9 +4,10 @@ import (
 	"log/slog"
 	"strings"
 
-	"github.com/devusSs/minls/internal/log"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
+
+	"github.com/devusSs/minls/internal/log"
 )
 
 type Client struct {

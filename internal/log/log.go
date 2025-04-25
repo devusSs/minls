@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -15,7 +16,9 @@ func Init() error {
 		return fmt.Errorf("could not create logs dir: %w", err)
 	}
 
-	go cleanOldLogs()
+	wg := &sync.WaitGroup{}
+	wg.Add(1)
+	go cleanOldLogs(wg)
 
 	level := os.Getenv("LOG_LEVEL")
 	if level == "" {
@@ -34,6 +37,10 @@ func Init() error {
 	if level == "debug" {
 		Warn("log - Init", slog.String("warn", "debug logging enabled, might leak sensitive data"))
 	}
+
+	wg.Wait()
+
+	Debug("log - Init", slog.String("action", "wg_wait_done"), slog.String("func", "cleanOldLogs"))
 
 	return nil
 }
@@ -158,8 +165,9 @@ const (
 	logFileMaxAge               = 7 * 24 * time.Hour
 )
 
-// TODO: find a way to complete this before program exits on main
-func cleanOldLogs() {
+func cleanOldLogs(wg *sync.WaitGroup) {
+	defer wg.Done()
+
 	entries, err := os.ReadDir(logsDir)
 	if err != nil {
 		fmt.Println("log - cleanOldLogs: could not read dir:", err)
